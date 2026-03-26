@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="SwagLabs Test Suite">
+    <test name="Login Tests">
+        <classes>
+            <class name="LoginTest"/>
+            <class name="NegativeLoginTest"/>
+        </classes>
+    </test>
+    <test name="Cart Tests">
+        <classes>
+            <class name="AddToCartTest"/>
+        </classes>
+    </test>
+    <test name="Checkout Tests">
+        <classes>
+            <class name="CheckOutTest"/>
+        </classes>
+    </test>
+</suite>
