@@ -1,0 +1,28 @@
+# Compiled and build artifacts
+*.class
+*.o
+*.obj
+*.out
+
+# Dependencies and generated output
+target/
+.gradle/
+.m2-temp/
+
+# Python caches
+.mypy_cache/
+.pytest_cache/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/

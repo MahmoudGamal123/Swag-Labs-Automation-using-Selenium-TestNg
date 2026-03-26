@@ -17,6 +17,8 @@
     <maven.compiler.target>17</maven.compiler.target>
     <selenium.version>4.39.0</selenium.version>
     <testng.version>7.11.0</testng.version>
+    <allure.version>2.30.0</allure.version>
+    <allure.maven.version>2.11.2</allure.maven.version>
   </properties>
 
   <dependencies>
@@ -32,6 +34,13 @@
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
       <version>${testng.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.qameta.allure</groupId>
+      <artifactId>allure-testng</artifactId>
+      <version>${allure.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -58,6 +67,19 @@
           <suiteXmlFiles>
             <suiteXmlFile>testng.xml</suiteXmlFile>
           </suiteXmlFiles>
+          <systemPropertyVariables>
+            <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>io.qameta.allure</groupId>
+        <artifactId>allure-maven</artifactId>
+        <version>${allure.maven.version}</version>
+        <configuration>
+          <reportVersion>${allure.version}</reportVersion>
+          <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
         </configuration>
       </plugin>
     </plugins>

@@ -106,12 +106,28 @@ Test data is managed in `DataProviders.java`. Modify the `@DataProvider` methods
 
 ## Reporting
 
-Test results are generated in the `target/surefire-reports/` directory after test execution.
+### TestNG Report
 
-### View HTML Report
+TestNG results are generated in the `target/surefire-reports/` directory after test execution.
+
+### Allure Report
+
+This project is configured with **Allure TestNG** support. Test execution writes raw Allure results to:
 
 ```bash
-open target/surefire-reports/index.html
+target/allure-results
+```
+
+Generate the HTML report with:
+
+```bash
+mvn allure:report
+```
+
+Open the interactive report locally with:
+
+```bash
+mvn allure:serve
 ```
 
 ## Troubleshooting

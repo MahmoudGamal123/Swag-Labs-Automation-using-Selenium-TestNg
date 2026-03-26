@@ -3,21 +3,22 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Page Object for the Product page.
  */
 public class ProductPage extends BasePage {
-    private final By titleProduct = By.xpath("//span[text()='Products']");
-    private final By cartButton = By.xpath("//button[text()='Add to cart']");
-    private final By cartIcon = By.xpath("//*[@id=\"shopping_cart_container\"]/a");
-    private final By sortDropDown = By.xpath("//select[@class='product_sort_container']");
-    private final By cartBadgeNumbers = By.xpath("//span[@data-test='shopping-cart-badge']");
+    private final By titleProduct = By.cssSelector("span.title");
+    private final By cartIcon = By.cssSelector(".shopping_cart_link");
+    private final By sortDropDown = By.cssSelector(".product_sort_container");
+    private final By cartBadgeNumbers = By.cssSelector("span[data-test='shopping-cart-badge']");
+    private final By inventoryItems = By.cssSelector(".inventory_item");
+    private final By inventoryItemNames = By.cssSelector(".inventory_item_name");
+    private final By inventoryItemPrices = By.cssSelector(".inventory_item_price");
 
     public ProductPage(WebDriver driver) {
         super(driver);
@@ -27,44 +28,124 @@ public class ProductPage extends BasePage {
      * Selects a sort option by visible text.
      */
     public void selectSortByVisibleText(String text) {
-        WebElement dropDown = wait.until(ExpectedConditions.visibilityOfElementLocated(sortDropDown));
+        WebElement dropDown = waitForVisible(sortDropDown);
         Select select = new Select(dropDown);
         select.selectByVisibleText(text);
     }
 
     /**
-     * Selects a sort option by value.
+     * Gets the currently selected sort option.
      */
-    public void selectSortByValue(String value) {
-        WebElement dropDown = wait.until(ExpectedConditions.visibilityOfElementLocated(sortDropDown));
+    public String getSelectedSortOption() {
+        WebElement dropDown = waitForVisible(sortDropDown);
         Select select = new Select(dropDown);
-        select.selectByValue(value);
+        return select.getFirstSelectedOption().getText().trim();
     }
 
     /**
-     * Adds random products to the cart.
+     * Adds the named product to the cart.
      */
-    public void clickProductAddToCart(String productName) {
-        List<WebElement> listOfElements = driver.findElements(cartButton);
-        Random random = new Random();
-        int randomClicks = random.nextInt(6) + 1;
-        for (int i = 0; i < randomClicks; i++) {
-            listOfElements.get(i).click();
-        }
+    public void addProductToCart(String productName) {
+        getProductButton(productName).click();
+    }
+
+    /**
+     * Removes the named product from the cart.
+     */
+    public void removeProductFromCart(String productName) {
+        getProductButton(productName).click();
     }
 
     /**
      * Gets the product page title.
      */
     public String getProductPageTitle() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(titleProduct)).getText();
+        return getText(titleProduct);
+    }
+
+    /**
+     * Checks whether the products page is displayed.
+     */
+    public boolean isOnProductsPage() {
+        return "Products".equals(getProductPageTitle());
+    }
+
+    /**
+     * Gets the number of products displayed.
+     */
+    public int getInventoryItemCount() {
+        return findAll(inventoryItems).size();
+    }
+
+    /**
+     * Gets the displayed product names.
+     */
+    public List<String> getInventoryItemNames() {
+        List<String> names = new ArrayList<>();
+        for (WebElement element : findAll(inventoryItemNames)) {
+            names.add(element.getText().trim());
+        }
+        return names;
+    }
+
+    /**
+     * Gets the displayed product prices.
+     */
+    public List<Double> getInventoryItemPrices() {
+        List<Double> prices = new ArrayList<>();
+        for (WebElement element : findAll(inventoryItemPrices)) {
+            prices.add(Double.parseDouble(element.getText().replace("$", "").trim()));
+        }
+        return prices;
     }
 
     /**
      * Gets the cart badge number.
      */
-    public int getCartBadgeNumbers() {
-        String badgeText = wait.until(ExpectedConditions.visibilityOfElementLocated(cartBadgeNumbers)).getText();
-        return Integer.parseInt(badgeText);
+    public int getCartBadgeCount() {
+        if (driver.findElements(cartBadgeNumbers).isEmpty()) {
+            return 0;
+        }
+        return Integer.parseInt(getText(cartBadgeNumbers));
+    }
+
+    /**
+     * Gets the current action button text for the named product.
+     */
+    public String getProductButtonText(String productName) {
+        return getProductButton(productName).getText().trim();
+    }
+
+    /**
+     * Opens the cart page.
+     */
+    public void openCart() {
+        click(cartIcon);
+    }
+
+    private WebElement getProductButton(String productName) {
+        String escapedProductName = escapeXpathText(productName);
+        By productButton = By.xpath(
+                "//div[@data-test='inventory-item'][.//*[@data-test='inventory-item-name' and normalize-space()="
+                        + escapedProductName + "]]//button"
+        );
+        return waitForVisible(productButton);
+    }
+
+    private String escapeXpathText(String value) {
+        if (!value.contains("'")) {
+            return "'" + value + "'";
+        }
+
+        String[] parts = value.split("'");
+        StringBuilder builder = new StringBuilder("concat(");
+        for (int i = 0; i < parts.length; i++) {
+            if (i > 0) {
+                builder.append(", \"'\", ");
+            }
+            builder.append("'").append(parts[i]).append("'");
+        }
+        builder.append(")");
+        return builder.toString();
     }
 }

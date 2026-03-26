@@ -1,5 +1,9 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="SwagLabs Test Suite">
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+        <listener class-name="AllureTestListener"/>
+    </listeners>
     <test name="Login Tests">
         <classes>
             <class name="LoginTest"/>
@@ -9,10 +13,12 @@
     <test name="Cart Tests">
         <classes>
             <class name="AddToCartTest"/>
+            <class name="CartTest"/>
         </classes>
     </test>
     <test name="Checkout Tests">
         <classes>
+            <class name="CheckoutInformationTest"/>
             <class name="CheckOutTest"/>
         </classes>
     </test>
